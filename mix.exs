@@ -15,14 +15,16 @@ defmodule Debt.MixProject do
   def application do
     [
       extra_applications: [:logger]
+      env: [
+        template_image_path: "./resources/images/gosdolg.png"
+      ]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+        {:mogrify, "~> 0.7.3"}
     ]
   end
 end
