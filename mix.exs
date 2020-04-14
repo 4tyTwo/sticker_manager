@@ -14,7 +14,7 @@ defmodule Debt.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
       env: [
         template_image_path: "./resources/images/gosdolg.png"
       ]
