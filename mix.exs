@@ -16,7 +16,8 @@ defmodule Debt.MixProject do
     [
       extra_applications: [:logger],
       env: [
-        template_image_path: "./resources/images/gosdolg.png"
+        template_image_path: "./resources/images/sticker_template.png", # strictly 512x512 pixels!
+        bot_token_path: "./resources/bot.token"
       ]
     ]
   end

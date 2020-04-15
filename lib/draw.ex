@@ -5,11 +5,13 @@ defmodule Draw do
 
     @mogrify_params %{
         font: "ArialBI",
-        font_size: "36",
-        x_cord: 40,
-        y_cord: 180,
+        font_size: "40",
+        x_cord: 50,
+        y_cord: 270,
         color: "rgb(255,0,0)"
     }
+
+    @output_path "./resources/images/result.png"
 
     def draw_debt(debt) do
         get_template_path()
@@ -18,7 +20,7 @@ defmodule Draw do
         |> Mogrify.custom("pointsize", @mogrify_params.font_size)
         |> Mogrify.custom("annotate", "+#{@mogrify_params.x_cord}+#{@mogrify_params.y_cord} $ #{debt}")
         |> Mogrify.custom("fill", @mogrify_params.color)
-        |> Mogrify.save(path: "./resources/images/result.png")
+        |> Mogrify.save(path: @output_path)
     end
 
     defp get_template_path() do
