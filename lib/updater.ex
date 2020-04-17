@@ -33,12 +33,18 @@ defmodule Debt.Updater do
     defp get_first_sticker_file_id([]), do: nil
     defp get_first_sticker_file_id([%{file_id: file_id } | _]), do: file_id
 
+    @spec get_debt_value() :: String.t()
     defp get_debt_value() do
         %{
             status_code: 200,
             body: body
         } = HTTPoison.get! "https://www.treasurydirect.gov/NP_WS/debt/current/", [], params: %{format: "json"}
         %{totalDebt: debt} = Jason.decode!(body, keys: :atoms)
+        format_debt debt
+    end
+
+    @spec format_debt(integer()) :: String.t()
+    defp format_debt(debt) do
         debt
         |> round
         |> Integer.to_charlist
@@ -47,7 +53,6 @@ defmodule Debt.Updater do
         |> Enum.reverse
         |> Enum.map(&Enum.reverse/1)
         |> Enum.join(",")
-    
     end
 
 defp user_id(), do: Application.get_env(@application, :user_id)
