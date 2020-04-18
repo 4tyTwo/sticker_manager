@@ -22,7 +22,8 @@ defmodule Debt.MixProject do
         template_image_path: "./resources/images/sticker_template.png", # strictly 512x512 pixels!
         bot_token_path: "./resources/bot.token",
         user_id: String.to_integer(System.get_env("USER_ID"))
-      ]
+      ],
+      mod: {Debt.Application, []}
     ]
   end
 
@@ -33,6 +34,7 @@ defmodule Debt.MixProject do
         {:nadia, "~> 0.6.0"},
         {:httpoison, "~> 1.6.2"},
         {:jason, "~> 1.2"},
+        {:quantum, "~> 3.0-rc"},
         {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
