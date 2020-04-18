@@ -3,47 +3,27 @@ defmodule Debt.Updater do
     @output_path "./resources/images/result.png"
     @application :debt
     @emojis "💵"
+    @treasury_url "https://www.treasurydirect.gov/NP_WS/debt/current/"
 
     @type sticker :: Nadia.Model.Sticker.t()
 
     @spec update_sticker() :: :ok | {:error, term()}
     def update_sticker() do
-
-        # get new debt value
-        new_debt = get_debt_value()
-
-        # check if it changed (save it in local file or persistance_term I guess)
-
-        case :persistent_term.get(:debt, nil) do
-            ^new_debt -> :ok;
-            _ ->
-                # get current sticker file id
-                {:ok, %{stickers: stickers}} = Nadia.get_sticker_set(@sticker_set_name) # TODO: handle error
-                old_id = get_first_sticker_file_id(stickers)
-                # draw new sticker
-                :ok = Debt.Draw.draw_debt(new_debt, @output_path) # TODO: handle error
-                # add new sticker
-                :ok = Nadia.add_sticker_to_set(user_id(), @sticker_set_name, @output_path, @emojis) # TODO: handle error
-                # remove old sticker by it's id
-                :ok = case old_id do
-                    nil -> :ok;
-                    _ -> Nadia.delete_sticker_from_set(old_id)
-                end
-                :ok
+        try do
+            new_debt = get_debt_value()
+            maybe_update_sticker new_debt
+        catch
+            error -> error
         end
     end
-
-    @spec get_first_sticker_file_id([sticker()]) :: String.t() | nil
-    defp get_first_sticker_file_id([]), do: nil
-    defp get_first_sticker_file_id([%{file_id: file_id } | _]), do: file_id
 
     @spec get_debt_value() :: String.t()
     defp get_debt_value() do
         %{
             status_code: 200,
             body: body
-        } = HTTPoison.get! "https://www.treasurydirect.gov/NP_WS/debt/current/", [], params: %{format: "json"}
-        %{totalDebt: debt} = Jason.decode!(body, keys: :atoms)
+        } = Debt.Utils.handle_result(HTTPoison.get! @treasury_url, [], params: %{format: "json"})
+        {:ok, %{totalDebt: debt}} = Debt.Utils.handle_result(Jason.decode(body, keys: :atoms))
         format_debt debt
     end
 
@@ -59,6 +39,43 @@ defmodule Debt.Updater do
         |> Enum.join(",")
     end
 
-defp user_id(), do: Application.get_env(@application, :user_id)
+    @spec maybe_update_sticker(String.t()) :: :ok
+    defp maybe_update_sticker(debt) do
+        case :persistent_term.get(:debt, nil) do
+            ^debt ->
+                :ok; # value is the same, no need to update
+            _ ->
+                do_update_sticker debt
+                inform_me debt
+                :persistent_term.put(:debt, debt)
+        end
+    end
 
+    @spec do_update_sticker(String.t()) :: :ok
+    defp do_update_sticker(debt) do
+        old_id = get_sticker_to_remove_file_id()
+        Debt.Utils.handle_result(Debt.Draw.draw_debt(debt, @output_path))
+        Debt.Utils.handle_result(Nadia.add_sticker_to_set(user_id(), @sticker_set_name, @output_path, @emojis))
+        case old_id do
+            nil -> :ok;
+            _ -> Debt.Utils.handle_result(Nadia.delete_sticker_from_set(old_id))
+        end
+    end
+
+    @spec get_sticker_to_remove_file_id() :: String.t() | nil
+    defp get_sticker_to_remove_file_id() do
+        {:ok, %{stickers: stickers}} = Debt.Utils.handle_result(Nadia.get_sticker_set(@sticker_set_name))
+        get_first_sticker_file_id(stickers)
+    end
+
+    @spec user_id() :: integer()
+    defp user_id(), do: Application.get_env(@application, :user_id)
+
+     @spec get_first_sticker_file_id([sticker()]) :: String.t() | nil
+    defp get_first_sticker_file_id([]), do: nil
+    defp get_first_sticker_file_id([%{file_id: file_id } | _]), do: file_id
+
+    defp inform_me(debt) do
+        Nadia.send_message(user_id(), "Updated debt value, new debt is #{debt}")
+    end
 end
