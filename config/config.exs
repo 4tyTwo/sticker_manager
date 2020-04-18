@@ -17,7 +17,7 @@ config :debt, Debt.Scheduler,
         # Every 4 hours
         # {"0 */4 * * *", {Debt.Updater, :update_sticker, []}},
         # Every 15 minutes
-        {"*/1 * * * *", {Debt.Updater, :update_sticker, []}}
+        {"*/30 * * * *", {Debt.Updater, :update_sticker, []}}
     ]
 
 config :debt, :logger, [
@@ -38,3 +38,8 @@ config :debt, :logger, [
         }}
     }}
 ]
+config :debt,
+    template_image_path: "./resources/images/sticker_template.png", # strictly 512x512 pixels!
+    bot_token_path: "./resources/bot.token",
+    user_id: String.to_integer(System.get_env("USER_ID")),
+    secret: System.get_env("SECRET")
