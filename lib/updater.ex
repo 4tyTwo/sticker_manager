@@ -13,7 +13,9 @@ defmodule Debt.Updater do
             new_debt = get_debt_value()
             maybe_update_sticker new_debt
         catch
-            error -> error
+            error ->
+                _ = Nadia.send_message(user_id(), "Failed to update sticker, error: #{inspect(error)}")
+                error
         end
     end
 
