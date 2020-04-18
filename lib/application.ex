@@ -8,8 +8,17 @@ defmodule Debt.Application do
     :logger.remove_handler(Logger)
     :logger.add_handlers(:debt)
 
+    if Application.get_env(:debt, :secret) == nil do
+      raise "Secret not set"
+    end
+
     children = [
-      Debt.Scheduler
+      Debt.Scheduler,
+      Plug.Cowboy.child_spec(
+        scheme: :http,
+        plug: Debt.Router,
+        options: [port: 8080]
+      )
     ]
 
     opts = [strategy: :one_for_one, name: Debt.Supervisor]

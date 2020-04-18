@@ -10,19 +10,15 @@ defmodule Debt.MixProject do
       deps: deps(),
       dialyzer: [
         plt_add_deps: :apps_direct
-    ]
+      ]
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
-      env: [
-        template_image_path: "./resources/images/sticker_template.png", # strictly 512x512 pixels!
-        bot_token_path: "./resources/bot.token",
-        user_id: String.to_integer(System.get_env("USER_ID"))
-      ],
+      extra_applications: [:logger, :plug, :cowboy, :jason],
+      env: [],
       mod: {Debt.Application, []}
     ]
   end
@@ -36,7 +32,8 @@ defmodule Debt.MixProject do
         {:jason, "~> 1.2"},
         {:quantum, "~> 3.0-rc"},
         {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-        {:logger_logstash_formatter, git: "https://github.com/rbkmoney/logger_logstash_formatter.git", branch: :master}
+        {:logger_logstash_formatter, git: "https://github.com/rbkmoney/logger_logstash_formatter.git", branch: :master},
+        {:plug_cowboy, "~> 2.1.3"}
     ]
   end
 end
