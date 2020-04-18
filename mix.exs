@@ -5,9 +5,12 @@ defmodule Debt.MixProject do
     [
       app: :debt,
       version: "0.1.0",
-      elixir: "~> 1.9",
+      elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_add_deps: :apps_direct
+    ]
     ]
   end
 
@@ -29,7 +32,8 @@ defmodule Debt.MixProject do
         {:mogrify, "~> 0.7.3"},
         {:nadia, "~> 0.6.0"},
         {:httpoison, "~> 1.6.2"},
-        {:jason, "~> 1.2"}
+        {:jason, "~> 1.2"},
+        {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 end

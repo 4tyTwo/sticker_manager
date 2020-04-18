@@ -11,6 +11,7 @@ defmodule Debt.Draw do
         color: "rgb(255,0,0)"
     }
 
+    @spec draw_debt(String.t(), String.t()) :: :ok | no_return()
     def draw_debt(debt, output_path) do
         get_template_path()
         |> Mogrify.open()
@@ -22,6 +23,7 @@ defmodule Debt.Draw do
         :ok
     end
 
+    @spec get_template_path() :: String.t() | no_return()
     defp get_template_path() do
         case Application.get_env(@application, :template_image_path) do
                 nil -> raise "No template_image_path set"

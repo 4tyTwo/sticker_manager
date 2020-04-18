@@ -4,6 +4,9 @@ defmodule Debt.Updater do
     @application :debt
     @emojis "💵"
 
+    @type sticker :: Nadia.Model.Sticker.t()
+
+    @spec update_sticker() :: :ok | {:error, term()}
     def update_sticker() do
 
         # get new debt value
@@ -30,6 +33,7 @@ defmodule Debt.Updater do
         end
     end
 
+    @spec get_first_sticker_file_id([sticker()]) :: String.t() | nil
     defp get_first_sticker_file_id([]), do: nil
     defp get_first_sticker_file_id([%{file_id: file_id } | _]), do: file_id
 
