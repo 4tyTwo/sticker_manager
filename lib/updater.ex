@@ -43,14 +43,16 @@ defmodule Debt.Updater do
 
     @spec maybe_update_sticker(String.t()) :: :ok
     defp maybe_update_sticker(debt) do
-        case :persistent_term.get(:debt, nil) do
+        result = case :persistent_term.get(:debt, nil) do
             ^debt ->
-                :ok; # value is the same, no need to update
+                :not_updated # value is the same, no need to update
             _ ->
                 do_update_sticker debt
-                inform_me debt
                 :persistent_term.put(:debt, debt)
+                :updated
         end
+        inform_me result, debt
+        :ok
     end
 
     @spec do_update_sticker(String.t()) :: :ok
@@ -77,7 +79,10 @@ defmodule Debt.Updater do
     defp get_first_sticker_file_id([]), do: nil
     defp get_first_sticker_file_id([%{file_id: file_id } | _]), do: file_id
 
-    defp inform_me(debt) do
-        Nadia.send_message(user_id(), "Updated debt value, new debt is #{debt}")
+    defp inform_me(:updated, debt), do: do_inform_me("Updated debt value, new debt is #{debt}")
+    defp inform_me(:not_updated, _), do: do_inform_me("Debt value has not changed")
+
+    defp do_inform_me(message) do
+        Nadia.send_message(user_id(), message)
     end
 end
