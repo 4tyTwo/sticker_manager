@@ -4,6 +4,10 @@ defmodule Debt.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
+    :logger.remove_handler(:default)
+    :logger.remove_handler(Logger)
+    :logger.add_handlers(:debt)
+
     children = [
       Debt.Scheduler
     ]

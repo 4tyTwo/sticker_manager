@@ -35,7 +35,8 @@ defmodule Debt.MixProject do
         {:httpoison, "~> 1.6.2"},
         {:jason, "~> 1.2"},
         {:quantum, "~> 3.0-rc"},
-        {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+        {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+        {:logger_logstash_formatter, git: "https://github.com/rbkmoney/logger_logstash_formatter.git", branch: :master}
     ]
   end
 end
