@@ -5,8 +5,8 @@ defmodule Debt.Authentication do
 
   def authenticated?(conn) do
     case Plug.Conn.get_req_header(conn, "secret") do
-      [] -> false;
-      [value] -> is_secret_correct? value;
+      [] -> false
+      [value] -> is_secret_correct?(value)
       _ -> false
     end
   end
@@ -25,5 +25,4 @@ defmodule Debt.Authentication do
     secret = Application.get_env(:debt, :secret)
     secret == value
   end
-
 end
