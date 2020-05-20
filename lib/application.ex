@@ -8,9 +8,7 @@ defmodule Debt.Application do
     :logger.remove_handler(Logger)
     :logger.add_handlers(:debt)
 
-    if Application.get_env(:debt, :secret) == nil do
-      raise "Secret not set"
-    end
+    _ = Application.fetch_env!(:debt, :secret)
 
     children = [
       Debt.Scheduler,

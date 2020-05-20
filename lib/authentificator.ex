@@ -22,7 +22,6 @@ defmodule Debt.Authentication do
   end
 
   defp is_secret_correct?(value) do
-    secret = Application.get_env(:debt, :secret)
-    secret == value
+    value === Application.fetch_env!(:debt, :secret)
   end
 end

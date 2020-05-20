@@ -27,9 +27,6 @@ defmodule Debt.Draw do
 
   @spec get_template_path() :: String.t() | no_return()
   defp get_template_path() do
-    case Application.get_env(@application, :template_image_path) do
-      nil -> raise "No template_image_path set"
-      path -> path
-    end
+    Application.fetch_env!(@application, :template_image_path)
   end
 end
