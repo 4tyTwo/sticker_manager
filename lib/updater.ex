@@ -4,6 +4,7 @@ defmodule Debt.Updater do
   @application :debt
   @emojis "💵"
   @treasury_url "https://www.treasurydirect.gov/NP_WS/debt/current/"
+  @user_id Application.fetch_env!(@application, :user_id)
 
   @type sticker :: Nadia.Model.Sticker.t()
 
@@ -14,7 +15,7 @@ defmodule Debt.Updater do
       maybe_update_sticker(new_debt)
     catch
       error ->
-        _ = Nadia.send_message(user_id(), "Failed to update sticker, error: #{inspect(error)}")
+        _ = Nadia.send_message(@user_id, "Failed to update sticker, error: #{inspect(error)}")
         error
     end
   end
@@ -66,7 +67,7 @@ defmodule Debt.Updater do
     Debt.Utils.handle_result(Debt.Draw.draw_debt(debt, @output_path))
 
     Debt.Utils.handle_result(
-      Nadia.add_sticker_to_set(user_id(), @sticker_set_name, @output_path, @emojis)
+      Nadia.add_sticker_to_set(@user_id, @sticker_set_name, @output_path, @emojis)
     )
 
     case old_id do
@@ -83,9 +84,6 @@ defmodule Debt.Updater do
     get_first_sticker_file_id(stickers)
   end
 
-  @spec user_id() :: integer()
-  defp user_id(), do: Application.get_env(@application, :user_id)
-
   @spec get_first_sticker_file_id([sticker()]) :: String.t() | nil
   defp get_first_sticker_file_id([]), do: nil
   defp get_first_sticker_file_id([%{file_id: file_id} | _]), do: file_id
@@ -94,6 +92,6 @@ defmodule Debt.Updater do
   defp inform_me(:not_updated, _), do: do_inform_me("Debt value has not changed")
 
   defp do_inform_me(message) do
-    Nadia.send_message(user_id(), message)
+    Nadia.send_message(@user_id, message)
   end
 end
