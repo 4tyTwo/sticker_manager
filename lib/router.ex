@@ -17,4 +17,9 @@ defmodule Debt.Router do
   get "/health" do
     Plug.Conn.send_resp(conn, 200, "running")
   end
+
+  match _ do
+    send_resp(conn, 404, "")
+  end
+
 end
